@@ -1,0 +1,15 @@
+[
+  {
+    "name": "Spaghetti",
+    "writer": 899,
+    "specs": {
+      "vegetarian": true,
+    },
+    "description": "lrevnofn ",
+    "rating": 4,
+    "image": {
+      "small": "/images/foodExample1.jpg",
+      "large": "/images/foodExample1.jpg"
+    }
+  }
+ ]

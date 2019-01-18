@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1, shrink-to-fit=no">
+
+
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<title>Student Recipe Share</title>
+</head>
+<body>
+<nav id="nav" class="navbar navbar-light bg-light"">
+	<a class="navbar-brand" href="#">Recipes</a>
+	
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item active">
+			<a class="nav-link" onclick=loadRecipes() href="#/Recies">Recipes</a>
+		</li>
+		
+		<li class="nav-item">
+			<a class="nav-link" onclick=loadPeople() href="#/Users">Users</a>
+		</li>
+		<li class="nav-item"><a class="nav-link" onClick=loadLogIn() href="#/LogIn">Log In</a></li>
+		<li  id="addNav" class="nav-item"><a id="addNav" class="nav-link" onClick=tryAdd() href="#/Add">Add Recipe</a></li>
+		<li class="nav-item"><a class="nav-link" onClick=logOut() href="#">Log Out</a></li>
+	</ul>
+  </div>
+  <ul class="nav navbar-nav navbar-right">
+	<li id="logLabel">Not logged in</li>
+	<li><button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button></li>
+  </li>
+  </ul>
+  
+</nav>
+<div id="main">
+	<div class="row" style="background-color:lavender;">
+		<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+			<ol class="carousel-indicators">
+				<li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+				<li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+				<li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+			</ol>
+			<div class="carousel-inner">
+				<div class="carousel-item active">
+					<img class="d-block w-100" src="images/foodExample1.jpg" alt="First slide">
+				</div>
+				<div class="carousel-item">
+					<div class="item">
+						<img class="d-block w-100" src="images/foodExample2.jpg" alt="Second slide">
+					</div>
+				</div>
+				<div class="carousel-item">
+					<img class="img-fluid" src="images/foodExample3.jpg" alt="Third slide">
+				</div>
+			</div>
+			<a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="sr-only">Previous</span>
+			</a>
+			<a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="sr-only">Next</span>
+			</a>
+		</div>
+	</div>
+<div id="individual">
+	<div class="container">
+		<div class="card">
+			<div class="container-fliud">
+				<div class="wrapper row">
+					<div class="preview col-md-6">
+						
+						<div class="preview-pic tab-content">
+						  <img width=100% id="Ind_pic"  src="" alt="Image">
+						</div>
+						
+						
+					</div>
+					<div class="details col-md-6">
+						<h3 class="product-title" id="Ind_title"></h3>
+						
+						<p class="product-description" id="Ind_description"></p>
+						<p class="product-description" id="Ind_author"></p>
+						<div class="action">
+							<button class="add-to-cart btn btn-default" id="authorButt" type="button">View Author</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	<div class="row" style="background-color:orange">
+		<div class="card-group" id="cardGroup">
+			
+			
+		</div>
+	</div>
+</div>
+<div class="row" id="logIn">
+<div class="container">
+
+	<div class="center-block">
+	<form class="form-signin">
+		
+  <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+  <label for="inputUsername" class="sr-only">Username</label>
+  <input type="text" id="inputUsername" class="form-control"  placeholder="Username" required autofocus>
+  
+  <div class="checkbox mb-3">
+    <label>
+      <input type="checkbox" value="remember-me"> Remember me
+    </label>
+  </div>
+  <button class="btn btn-lg btn-primary btn-block" onClick=tryLogIn() type="submit">Sign in</button>
+</form>
+</div>
+</div>
+</div>
+<div id="addRecipe">
+	<form id="recipe_form">
+		<div class="form-group">
+			<label for="recipeName">Add a recipe</label>
+			<input id="title" type="text" name="title" class="form-control form-control-lg" placeholder="Recipe Name" required>
+			<input id="description" type="text" name="description" class="form-control form-control-sm" placeholder="Recipe description">
+			0
+  <input type="range" name="points" min="0" max="5">
+5
+			<button type="submit" onClick=postRecipe() class="btn btn-default">Submit</button>
+		</div>
+	</form>
+</div>
+<script>
+
+var currentUser="none";
+window.onload=function(){
+	loadRecipes();
+	if(document.cookie!=""){
+		var strs=document.cookie.split("=");
+		alert(strs[1]);
+		currentUser=strs[1];
+		$("#logLabel").html(currentUser);
+	}
+};
+	class Recipe{
+		constructor(name, author, description,image){
+			this._name=name;
+			this._author=author;
+			this._description=description;
+			this._image=image;
+		}
+		getName(){
+			return this._name;
+		}
+		getDescription(){
+			return this._description;
+		}
+		getImage(){
+			return this._image;
+		}
+		getAuthor(){
+			return this._author;
+		}
+		getCardHTML(){
+			var str="<div class=\"card\">";
+			str=str+"<img class=\"card-img-top\" src=\""+this._image.toString()+"\" alt=\"CardImage cap\">";
+			str=str+"<div class=\"card-body\">";
+			str=str+"<h5 class=\"card-title\">"+this._name.toString()+"</h5>";
+			str=str+"<p class=\"card-text\">"+this._description.toString()+"</p>";
+			str=str+"<p class=\"card-text\"><small class=\"text-muted\">by "+this._author.toString()+"</small></p>";
+			str=str+"<a href=\"#\" onclick=loadIndRecipe(\""+this._name.toString() +"\") class=\"btn btn-primary\">View</a></div></div>";
+			return str;
+		}
+	}
+	function loadRecipes(){
+	$("#addRecipe").hide();
+		$("#logIn").hide();
+		$("#addNav").addClass("disabled");
+		$("#carouselExampleIndicators").show();
+		$("#cardGroup").show();
+		$("#individual").hide();
+		
+		$.get("http://127.0.0.1:3000/allrecipes",
+			function(data){
+				var recipies=[]
+				htmlString="";
+				for(var id in data){
+					var title=data[id].name;
+					var author= data[id].writer;
+					var description=data[id].description;
+					var rating=data[id].rating;
+					var image=data[id].image;
+					var r=new Recipe(title, author, description, image.small);
+					recipies.push(r);
+					
+					htmlString=htmlString+r.getCardHTML();
+				}
+				
+				
+				$("#cardGroup").html(htmlString);
+				
+			});
+	};
+	class Person{
+		constructor(username, forename, surname){
+			this._username=username;
+			this._forename=forename;
+			this._surname=surname;
+			var recipes=[];
+			$.get("http://127.0.0.1:3000/user/"+username,function(data){
+		
+				for(var id in data){
+					var r= new Recipe(data[id].name,data[id].writer,data[id].description,"\images/foodExample1");
+					recipes.push(r);
+					recipes.push(r);
+				}
+				
+			});
+		}
+		getRecipes(){
+			return this._recipes;
+		}
+		getCardHTML(){
+			var str="<div class=\"card\">";
+			str=str+"<img class=\"card-img-top\" src=\"\images\\usericon.png\" alt=\"CardImage cap\">";
+			str=str+"<div class=\"card-body\">";
+			str=str+"<h5 class=\"card-title\">"+this._username.toString()+"</h5>";
+			str=str+"<p class=\"card-text\"><small class=\"text-muted\">"+this._forename.toString()+" "+this._surname.toString()+"</small></p>";
+			str=str+"<a href=\"#\"  onClick=loadIndPerson(\""+this._username.toString()+"\") class=\"btn btn-primary\">View</a></div></div>";
+			return str;
+		}
+	}
+	function loadPeople(){
+	$("#addRecipe").hide();
+	$("#logIn").hide();
+		$("#individual").hide();
+		var htmlString="";
+		$("#carouselExampleIndicators").show();
+		$.get("http:/127.0.0.1:3000/people",function(data){
+		
+			for(var id in data){
+				person=new Person(data[id].username,data[id].forename,data[id].surname);
+				
+				htmlString=htmlString+person.getCardHTML();
+			}
+			$("#cardGroup").html(htmlString);
+		});
+		
+	}
+	function loadIndRecipe(name){
+	$("#addRecipe").hide();
+	$("#logIn").hide();
+		$("#cardGroup").html("");
+		$("#carouselExampleIndicators").hide();
+		$("#individual").show();
+		$.get("http:/127.0.0.1:3000/recipe/"+name,function(data){
+		
+			$("#Ind_pic").attr("src",data.image.small);
+			$("#Ind_title").html(data.name);
+			$("#Ind_description").html(data.description);
+			$("#Ind_author").html("by "+data.writer);
+			$("#authorButt").on("click",function(){
+				loadIndPerson(data.writer);
+			});
+			
+		});
+		
+	}
+	function tryAdd(){
+		if(currentUser=="none"){
+			alert("Log in to add recipe");
+		}else{
+			loadAddPage();
+		}
+	}
+	function loadIndPerson(name){
+	$("#addRecipe").hide();
+	$("#logIn").hide();
+		$("#cardGroup").html("");
+		$("#carouselExampleIndicators").hide();
+		$("#individual").show();
+		$.get("http:/127.0.0.1:3000/user/"+name,function(data){
+			$("#Ind_pic").attr("src","\images/usericon.png");
+			$("#Ind_title").html(data.username);
+			$("#Ind_description").html(data.forename+" "+data.surname);
+		});
+		$.get("http:/127.0.0.1:3000/recipes/"+name,function(data){
+			var htmlString="";
+			for(var id in data){
+				var r= new Recipe(data[id].name,data[id].writer,data[id].description,data[id].image.small);
+					htmlString=htmlString+r.getCardHTML();
+			}
+			$("#cardGroup").html(htmlString);
+		});
+	}
+	function loadLogIn(){
+		$("#addRecipe").hide();
+		$("#cardGroup").hide();
+		$("#individual").hide();
+		$("#logIn").show();
+		$("#carouselExampleIndicators").hide();
+	}
+	function tryLogIn(){
+		var name=$("#inputUsername").val();
+		
+		$.get("http:/127.0.0.1:3000/isUser/"+name,function(data){
+			if(data==true){
+				currentUser=name;
+				$("#logLabel").html(currentUser);
+				
+				loadRecipes();
+				document.cookie="username = "+currentUser;
+				var c=document.cookie;
+			}else{
+				alert("Not a user try again");
+			}
+		})
+	}
+	function loadAddPage(){
+		$("#cardGroup").hide();
+		$("#individual").hide();
+		$("#logIn").hide();
+		$("#carouselExampleIndicators").hide();
+		$("#addRecipe").show();
+	}
+	function postRecipe(){
+		alert("post called");
+		alert($("#recipe_form").serialize());
+		$.post("http:/127.0.0.1:3000/newRecipe",$("#recipe_form").serialize()+"&image=\images/notAvailable.jpg&writer="+currentUser,function(data){
+			alert(data);
+		});
+	}
+	function logOut(){
+		if (currentUser=="none"){
+		alert(currentUser)
+			alert("not logged in");
+		}else{
+			document.cookie="username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+			currentUser="none";
+			$("#logLabel").html("Not logged in");
+		}
+	}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</body>
